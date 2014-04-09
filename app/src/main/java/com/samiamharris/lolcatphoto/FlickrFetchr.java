@@ -1,6 +1,5 @@
 package com.samiamharris.lolcatphoto;
 
-
 import android.net.Uri;
 import android.util.Log;
 
@@ -15,7 +14,6 @@ import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-
 
 /**
  * Created by samharris on 4/9/14.
@@ -91,18 +89,6 @@ public class FlickrFetchr {
 
         return downloadGalleryItems(url);
     }
-
-//    public String buildUrl () {
-//        String url = Uri.parse(ENDPOINT).buildUpon()
-//                .appendQueryParameter("method", METHOD_SEARCH)
-//                .appendQueryParameter("api_key", API_KEY)
-//                .appendQueryParameter(PARAM_EXTRAS, EXTRA_SMALL_URL)
-//                .appendQueryParameter(PARAM_TEXT, LOL_CAT)
-//                .build().toString();
-//
-//        return url;
-//    }
-
 
     void parseItems(ArrayList<LolCatPhoto> items, XmlPullParser parser)
             throws XmlPullParserException, IOException {

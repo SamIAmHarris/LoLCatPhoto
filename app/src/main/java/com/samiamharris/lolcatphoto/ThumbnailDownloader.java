@@ -68,7 +68,7 @@ public class ThumbnailDownloader<Token> extends HandlerThread{
     private void handleRequest(final Token token) {
         try {
             final String url = requestMap.get(token);
-            if(url == null) {  //check for the existance of a URL
+            if(url == null) {  //check for the existence of a URL
                 return;
             }
             byte[] bitmapBytes = new FlickrFetchr().getUrlBytes(url);  //pass the URL to a new instance of FlickrFetcher

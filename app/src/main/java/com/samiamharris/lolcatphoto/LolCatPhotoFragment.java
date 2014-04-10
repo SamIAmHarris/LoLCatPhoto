@@ -1,5 +1,7 @@
 package com.samiamharris.lolcatphoto;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,9 +12,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
+
 
 /**
  * Created by samharris on 4/9/14.
@@ -20,6 +28,8 @@ import java.util.Random;
 public class LolCatPhotoFragment extends Fragment {
 
     private static final String TAG = "LolCatPhotoFragment";
+
+    final int MAX_SEC = 100;
 
     private ImageView mImageView;
     private ArrayList<LolCatPhoto> mItems;
@@ -37,7 +47,7 @@ public class LolCatPhotoFragment extends Fragment {
         mThumbnailThread.setListener(new ThumbnailDownloader.Listener<ImageView>() {
             @Override
             public void onThumbnailDownloaded(ImageView imageView, Bitmap thumbnail) {
-                if(isVisible()) {  //checks to see if the fragment is visible first
+                if (isVisible()) {  //checks to see if the fragment is visible first
                     imageView.setImageBitmap(thumbnail);
                 }
             }
@@ -89,23 +99,60 @@ public class LolCatPhotoFragment extends Fragment {
         }
 
         if(mItems != null) {
-            //Set a default image while waiting to load
-            mImageView.setImageResource(R.drawable.ic_launcher);
             mThumbnailThread.queueThumbnail(mImageView, mItems.get(sCount).getUrl());  //triggers the image downloading
         }
     }
 
     //creates AsyncTask that will grab the LolCat Photo
-    private class FetchItemsTask extends AsyncTask<Void,Void,ArrayList<LolCatPhoto>> {
+    private class FetchItemsTask extends AsyncTask<Void,Integer,ArrayList<LolCatPhoto>> {
+
+        private ProgressDialog progressDialog = new ProgressDialog(getActivity());
+        @Override
+        protected void onPreExecute() {
+            progressDialog.setMax(MAX_SEC);
+            progressDialog.setProgress(0);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progressDialog.setMessage("Loading Cats...");
+            progressDialog.show();
+        }
+
         @Override
         protected ArrayList<LolCatPhoto> doInBackground(Void... params) {
-            return new FlickrFetchr().search();
+
+            ArrayList<LolCatPhoto> backgroundArray =  new ArrayList<LolCatPhoto>();
+
+            //Broke up FlickrFetchr methods so that the progress bar would
+            // actually represent real progress being made
+
+            try {
+                publishProgress(MAX_SEC/5);
+                FlickrFetchr flickrFetchr = new FlickrFetchr();
+
+                publishProgress((MAX_SEC*2)/5);
+                String url = flickrFetchr.search();
+
+                publishProgress((MAX_SEC*3)/5);
+                String xmlString = flickrFetchr.getUrl(url);
+
+                publishProgress((MAX_SEC*4)/5);
+                backgroundArray = flickrFetchr.downloadGalleryItems(xmlString);
+
+                publishProgress(MAX_SEC);
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+                return backgroundArray;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            progressDialog.setProgress(values[0]);
 
         }
 
         @Override
         protected void onPostExecute(ArrayList<LolCatPhoto> items) {//run in the main UI thread, not the background
-
+            progressDialog.dismiss();
             mItems = items;
             setImage();
         }

@@ -38,7 +38,6 @@ public class ThumbnailDownloader<Token> extends HandlerThread{
         mResponseHandler = responseHandler;
     }
 
-
     @Override
     protected void onLooperPrepared() {
         mHandler = new Handler() {

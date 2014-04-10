@@ -18,11 +18,14 @@ import java.util.Map;
 public class ThumbnailDownloader<Token> extends HandlerThread{
 
     private static final String TAG = "ThumbnailDownloader";
-    private static final int MESSAGE_DOWNLOAD = 0;  //what - user defined int
+    //user defined int
+    private static final int MESSAGE_DOWNLOAD = 0;
 
     Handler mHandler;
-    Map<Token, String> requestMap = Collections.synchronizedMap(new HashMap<Token, String>());  //stores and receives the URL associated with a particular Token
-    Handler mResponseHandler;  //handler passed from the main thread
+    //stores and receives the URL associated with a particular Token
+    Map<Token, String> requestMap = Collections.synchronizedMap(new HashMap<Token, String>());
+    //handler passed from the main thread
+    Handler mResponseHandler;
     Listener<Token> mListener;
 
     public interface Listener<Token> {
@@ -40,10 +43,12 @@ public class ThumbnailDownloader<Token> extends HandlerThread{
 
     @Override
     protected void onLooperPrepared() {
+        //check the message type, retrieve the Token and pass it to handleRequest
         mHandler = new Handler() {
-            public void handleMessage(Message msg) {  //check the message type, retrieve the Token and pass it to handleRequest
+            public void handleMessage(Message msg) {
                 if(msg.what == MESSAGE_DOWNLOAD) {
-                    Token token = (Token)msg.obj;  //user defined object to be sent with the message
+                    //user defined object to be sent with the message
+                    Token token = (Token)msg.obj;
                     Log.i(TAG, "Got a request for url: " + requestMap.get(token));
                     handleRequest(token);
                 }
@@ -58,7 +63,8 @@ public class ThumbnailDownloader<Token> extends HandlerThread{
         Log.i(TAG, "Got an URL: " + url);
         requestMap.put(token, url);
 
-        mHandler.obtainMessage(MESSAGE_DOWNLOAD, token).sendToTarget();  //obtain the message, give it a Token, then send it to the message queue
+        //obtain the message, give it a Token, then send it to the message queue
+        mHandler.obtainMessage(MESSAGE_DOWNLOAD, token).sendToTarget();
     }
 
     /*
@@ -67,11 +73,14 @@ public class ThumbnailDownloader<Token> extends HandlerThread{
     private void handleRequest(final Token token) {
         try {
             final String url = requestMap.get(token);
-            if(url == null) {  //check for the existence of a URL
+            //check for the existence of a URL
+            if(url == null) {
                 return;
             }
-            byte[] bitmapBytes = new FlickrFetchr().getUrlBytes(url);  //pass the URL to a new instance of FlickrFetcher
-            final Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length);  //construct a bitmap with the array of bytes returned from getUrlBytes
+            //pass the URL to a new instance of FlickrFetcher
+            byte[] bitmapBytes = new FlickrFetchr().getUrlBytes(url);
+            //construct a bitmap with the array of bytes returned from getUrlBytes
+            final Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
             Log.i(TAG, "Bitmap created");
 
             mResponseHandler.post(new Runnable() {
@@ -79,8 +88,10 @@ public class ThumbnailDownloader<Token> extends HandlerThread{
                 public void run() {
                     if(requestMap.get(token) != url)
                         return;
-                    requestMap.remove(token);  //removes the Token from the requestMap
-                    mListener.onThumbnailDownloaded(token, bitmap); // sets the bitmap on the Token
+                    //removes the Token from the requestMap
+                    requestMap.remove(token);
+                    // sets the bitmap on the Token
+                    mListener.onThumbnailDownloaded(token, bitmap);
                 }
             });
         } catch (IOException ioe) {

@@ -42,14 +42,18 @@ public class LolCatPhotoFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);  //retains the fragment state when parent Activity is destroyed
-        new FetchItemsTask().execute(); //starts the AsyncTask and runs doInBackground()
+        //retains the fragment state when parent Activity is destroyed
+        setRetainInstance(true);
+        //starts the AsyncTask and runs doInBackground()
+        new FetchItemsTask().execute();
 
-        mThumbnailThread = new ThumbnailDownloader<ImageView>(new Handler());  //creates a new thread and passes a handler to it
+        //creates a new thread and passes a handler to it
+        mThumbnailThread = new ThumbnailDownloader<ImageView>(new Handler());
         mThumbnailThread.setListener(new ThumbnailDownloader.Listener<ImageView>() {
             @Override
             public void onThumbnailDownloaded(ImageView imageView, Bitmap thumbnail) {
-                if (isVisible()) {  //checks to see if the fragment is visible first
+                //checks to see if the fragment is visible first
+                if (isVisible()) {
                     imageView.setImageBitmap(thumbnail);
                 }
             }
@@ -72,10 +76,12 @@ public class LolCatPhotoFragment extends Fragment {
             public void onClick(View v) {
                 sCount = new Random().nextInt(99);
                 mItem = mItems.get(sCount);
-                mThumbnailThread.queueThumbnail(mImageView, mItem.getUrl());  //triggers the image downloading
+                //triggers the image downloading
+                mThumbnailThread.queueThumbnail(mImageView, mItem.getUrl());
             }
         });
 
+        //Take you to the actual web page of the Flickr site
         mImageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -110,16 +116,19 @@ public class LolCatPhotoFragment extends Fragment {
 
     void setImage() {
 
-        if(getActivity() == null || mImageView == null) {  //fragments can exist unattached from the activity
+        //fragments can exist unattached from the activity
+        if(getActivity() == null || mImageView == null) {
             return;
         }
 
         if(mItems != null) {
-            mThumbnailThread.queueThumbnail(mImageView, mItems.get(sCount).getUrl());  //triggers the image downloading
+            //triggers the image downloading
+            mThumbnailThread.queueThumbnail(mImageView, mItems.get(sCount).getUrl());
         }
     }
 
-    //creates AsyncTask that will grab the LolCat Photo
+    //creates AsyncTask that will return an Array of LolCatPhoto objects and
+    //show the first photo
     private class FetchItemsTask extends AsyncTask<Void,Integer,ArrayList<LolCatPhoto>> {
 
         private ProgressDialog progressDialog = new ProgressDialog(getActivity());
@@ -138,7 +147,7 @@ public class LolCatPhotoFragment extends Fragment {
             ArrayList<LolCatPhoto> backgroundArray =  new ArrayList<LolCatPhoto>();
 
             //Broke up FlickrFetchr methods so that the progress bar would
-            // actually represent real progress being made
+            //actually represent real progress being made
 
             try {
                 publishProgress(MAX_SEC/5);

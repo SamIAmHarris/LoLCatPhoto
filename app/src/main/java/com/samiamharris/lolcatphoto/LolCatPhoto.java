@@ -51,6 +51,7 @@ public class LolCatPhoto {
         this.mUrl = mUrl;
     }
 
+    //Specifically for the Long Click WebPage
     public String getPhotoPageUrl() {
         return "http://www.flickr.com/photos/" + mOwner + "/" + mId;}
 

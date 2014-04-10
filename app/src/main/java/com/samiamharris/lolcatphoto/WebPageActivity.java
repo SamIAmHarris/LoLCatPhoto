@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
  */
 public class WebPageActivity extends SingleFragmentActivity {
 
+    //Same old Single Frag Activity set up
     @Override
     protected Fragment createFragment() {
         return new WebPageFragment();

@@ -18,7 +18,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- Handle configuration changes on my own so the
+        app doesn't reload the web page constantly -->
         <activity android:name=".WebPageActivity"
+
             android:configChanges="keyboardHidden|orientation|screenSize">
         </activity>
     </application>

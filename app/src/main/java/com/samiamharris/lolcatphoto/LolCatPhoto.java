@@ -51,4 +51,7 @@ public class LolCatPhoto {
         this.mUrl = mUrl;
     }
 
+    public String getPhotoPageUrl() {
+        return "http://www.flickr.com/photos/" + mOwner + "/" + mId;}
+
 }

@@ -2,7 +2,9 @@ package com.samiamharris.lolcatphoto;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -71,6 +73,20 @@ public class LolCatPhotoFragment extends Fragment {
                 sCount = new Random().nextInt(99);
                 mItem = mItems.get(sCount);
                 mThumbnailThread.queueThumbnail(mImageView, mItem.getUrl());  //triggers the image downloading
+            }
+        });
+
+        mImageView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                Uri photoPageUri = Uri.parse(mItem.getPhotoPageUrl());
+                Intent i = new Intent(getActivity(), WebPageActivity.class);
+                i.setData(photoPageUri);
+
+                startActivity(i);
+
+                return false;
             }
         });
 
